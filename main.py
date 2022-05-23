@@ -3,7 +3,7 @@ import os
 
 
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
@@ -38,16 +38,13 @@ class Student():
     def __init__(self, name, age):
         self.name: str = name
         self.age: int = age
-        self.classes: List[Class] = list()
+        self.classes: Set[Class] = set()
 
     def add_class(self, class_name):
         self.classes.append(class_name)
 
-    def remove_class(self, class_name):
-        # O(n)
-        # not only is this linear time, but also requires additional memory allocations as
-        # we shift contiguous memory on the intermediate remove
-        self.classes.remove(class_name)
+    def remove_class(self, class_name: Class):
+        self.classes.discard(class_name)
 
 
 app = FastAPI()
