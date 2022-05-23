@@ -1,0 +1,6 @@
+# ignore all
+*
+
+# allow app specifics
+!requirements.txt
+!app/

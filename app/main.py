@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 
-class PrimaryKey():
+class PrimaryKey:
     def __init__(self):
         self.id = 0
 
@@ -34,7 +34,7 @@ class Class(str, Enum):
         return [c for c in self.__members__.values()]
 
 
-class Student():
+class Student:
     def __init__(self, name, age):
         self.name: str = name
         self.age: int = age
@@ -57,7 +57,13 @@ key = PrimaryKey()
 @app.get("/")
 async def root():
     hostname: Optional[str] = os.uname().nodename
-    return JSONResponse(content={"message": "Hello world", "hostname": hostname, "time": datetime.datetime.isoformat(datetime.datetime.now())})
+    return JSONResponse(
+        content={
+            "message": "Hello world",
+            "hostname": hostname,
+            "time": datetime.datetime.isoformat(datetime.datetime.now()),
+        }
+    )
 
 
 class StudentOut(BaseModel):
@@ -71,7 +77,9 @@ class StudentOut(BaseModel):
 async def find_student(name: str) -> JSONResponse:
     for id, student in students.items():
         if student.name == name:
-            return StudentOut(id=id, name=student.name, age=student.age, classes=student.classes)
+            return StudentOut(
+                id=id, name=student.name, age=student.age, classes=student.classes
+            )
 
     return JSONResponse(content={"message": "Student not found"}, status_code=404)
 
@@ -82,7 +90,9 @@ async def get_student(id: int):
     if student is None:
         return JSONResponse(content={"message": "Student not found"}, status_code=404)
 
-    return StudentOut(id=id, name=student.name, age=student.age, classes=student.classes)
+    return StudentOut(
+        id=id, name=student.name, age=student.age, classes=student.classes
+    )
 
 
 @app.get("/students")
@@ -106,7 +116,9 @@ async def create_student(studentIn: StudentIn):
 
     id = key.next()
     students[id] = student
-    return StudentOut(id=id, name=student.name, age=student.age, classes=student.classes)
+    return StudentOut(
+        id=id, name=student.name, age=student.age, classes=student.classes
+    )
 
 
 class ClassOut(BaseModel):
