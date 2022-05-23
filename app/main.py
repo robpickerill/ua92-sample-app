@@ -1,13 +1,13 @@
 import datetime
 import os
 
-
-from enum import Enum
-from typing import Dict, List, Optional, Set
+from typing import Dict, Optional
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+
+from app.models import StudentIn, StudentOut, ModuleOut
+from app.student import Module, Student
 
 
 class PrimaryKey:
@@ -20,31 +20,6 @@ class PrimaryKey:
 
     def current(self):
         return self.id
-
-
-class Class(str, Enum):
-    CHEMISTRY = "chemistry"
-    COMPUTERSCIENCE = "computer science"
-    LAW = "law"
-    MEDICINE = "medicine"
-    PHYSICS = "physics"
-
-    @classmethod
-    def all(self):
-        return [c for c in self.__members__.values()]
-
-
-class Student:
-    def __init__(self, name, age):
-        self.name: str = name
-        self.age: int = age
-        self.classes: Set[Class] = set()
-
-    def add_class(self, class_name):
-        self.classes.append(class_name)
-
-    def remove_class(self, class_name: Class):
-        self.classes.discard(class_name)
 
 
 app = FastAPI()
@@ -64,13 +39,6 @@ async def root():
             "time": datetime.datetime.isoformat(datetime.datetime.now()),
         }
     )
-
-
-class StudentOut(BaseModel):
-    id: int
-    name: str
-    age: int
-    classes: List[Class]
 
 
 @app.get("/students/find", response_model=StudentOut)
@@ -100,12 +68,6 @@ async def get_students():
     return students.items()
 
 
-class StudentIn(BaseModel):
-    name: str
-    age: int
-    classes: List[Class] | None = None
-
-
 @app.post("/students", response_model=StudentOut)
 async def create_student(studentIn: StudentIn):
     student = Student(name=studentIn.name, age=studentIn.age)
@@ -121,10 +83,16 @@ async def create_student(studentIn: StudentIn):
     )
 
 
-class ClassOut(BaseModel):
-    name: str
+@app.get("/modules/{id}", response_model=ModuleOut)
+async def get_student_modules(id: int):
+    student = students.get(id)
+    if student is None:
+        return JSONResponse(content={"message": "Student not found"}, status_code=404)
+
+    return ModuleOut(modules=student.modules)
 
 
-@app.get("/courses")
-async def get_courses():
-    return Class.all()
+@app.get("/modules", response_model=ModuleOut)
+async def get_modules():
+    print(Module.all())
+    return ModuleOut(modules=Module.all())
