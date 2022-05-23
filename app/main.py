@@ -94,5 +94,4 @@ async def get_student_modules(id: int):
 
 @app.get("/modules", response_model=ModuleOut)
 async def get_modules():
-    print(Module.all())
     return ModuleOut(modules=Module.all())
