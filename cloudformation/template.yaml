@@ -31,7 +31,7 @@ Parameters:
     Description: Container image version / tag
 
 Resources:
-  ListenerHTTPSProductionTraffic:
+  ListenerHTTPTraffic:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       DefaultActions:
@@ -81,7 +81,7 @@ Resources:
   ECSService:
     Type: AWS::ECS::Service
     DependsOn:
-      - ListenerHTTPSProductionTraffic
+      - ListenerHTTPTraffic
     Properties:
       Cluster: !Ref ClusterName
       TaskDefinition: !Ref TaskDefinition
