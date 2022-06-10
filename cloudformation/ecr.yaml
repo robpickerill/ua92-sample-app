@@ -1,0 +1,26 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: >
+  Template to deploy the repository into ECR
+Parameters:
+  App:
+    Type: String
+    Description: Application app name
+    Default: sample-app
+
+Resources:
+    ECR:
+      Type: AWS::ECR::Repository
+      Metadata:
+        cfn_nag:
+          rules_to_suppress:
+            - id: W28
+              reason: ECR repository name should be explicit.
+      Properties:
+        RepositoryName: !Sub "ua92/${App}"
+
+Outputs:
+  ECRRepositoryURL:
+    Description: ECR respository URL
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECR}"
